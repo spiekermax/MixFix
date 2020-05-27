@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Material Components -->
+        <link rel="stylesheet" href="libraries/material-components.css">
+        <script src="libraries/material-components.js"></script>
+
+        <!-- Material Fonts -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="styles/popup.css">
+    </head>
+    <body class="mdc-typography">
+        <!-- Headline -->
+        <span class="headline mdc-typography--headline5">
+            <span>MI</span>
+            <span class="headline-first-x">X</span>
+            <span>FI</span>
+            <span class="headline-second-x">X</span>
+            <span class="headline-extra">
+                by
+                <a id="author-link">spiekermax</a>
+            </span>
+        </span>
+
+        <!-- Volume -->
+        <span class="mdc-typography--caption">VOLUME</span>
+        <div class="volume-options">
+
+            <!-- Slider -->
+            <div id="volume-slider" class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="200" aria-valuenow="100" aria-label="Adjust volume">
+                <div class="mdc-slider__track-container">
+                    <div class="mdc-slider__track"></div>
+                </div>
+                <div class="mdc-slider__thumb-container">
+                    <div class="mdc-slider__pin">
+                        <span class="mdc-slider__pin-value-marker"></span>
+                    </div>
+                    <svg class="mdc-slider__thumb" width="21" height="21">
+                        <circle cx="10.5" cy="10.5" r="7.875"></circle>
+                    </svg>
+                    <div class="mdc-slider__focus-ring"></div>
+                </div>
+            </div>
+
+            <!-- Spacer -->
+            <div class="volume-options-spacer"></div>
+
+            <!-- Reset button -->
+            <button id="volume-reset-button" class="mdc-icon-button material-icons" aria-label="Reset volume">undo</button>
+
+        </div>
+
+        <!-- Panning -->
+        <span class="mdc-typography--caption">PANNING</span>
+        <div class="panning-options">
+
+            <!-- Slider -->
+            <div id="panning-slider" class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider" aria-valuemin="-100" aria-valuemax="100" aria-valuenow="0" aria-label="Adjust panning">
+                <div class="mdc-slider__track-container">
+                    <div class="mdc-slider__track"></div>
+                </div>
+                <div class="mdc-slider__thumb-container">
+                    <div class="mdc-slider__pin">
+                        <span class="mdc-slider__pin-value-marker"></span>
+                    </div>
+                    <svg class="mdc-slider__thumb" width="21" height="21">
+                        <circle cx="10.5" cy="10.5" r="7.875"></circle>
+                    </svg>
+                    <div class="mdc-slider__focus-ring"></div>
+                </div>
+            </div>
+
+            <!-- Spacer -->
+            <div class="panning-options-spacer"></div>
+
+            <!-- Reset button -->
+            <button id="panning-reset-button" class="mdc-icon-button material-icons" aria-label="Reset panning">undo</button>
+
+        </div>
+
+        <!-- Scripts -->
+        <script src="scripts/popup.js"></script>
+    </body>
+</html>

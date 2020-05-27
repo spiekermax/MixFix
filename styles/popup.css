@@ -1,0 +1,72 @@
+/* GENERAL */
+
+:root {
+    --mdc-theme-primary: #40D478;
+    --mdc-theme-secondary: #0E8AE7;
+    --mdc-theme-background: #FFFFFF;
+    --mdc-theme-surface: #FFFFFF;
+    --mdc-theme-on-surface: #2A2B2E;
+}
+
+html {
+    user-select: none;
+}
+
+body {
+    margin: 16px;
+    min-width: 16rem;
+}
+
+
+/* COMPONENTS */
+
+.mdc-slider__pin {
+    width: 32px;
+    height: 32px;
+
+    margin-top: -8px;
+    margin-left: -5px;
+}
+
+
+/* ELEMENTS */
+
+.headline {
+    display: flex; 
+    flex-direction: row;
+
+    margin-bottom: 12px;
+}
+.headline-first-x {
+    color: #0E8AE7;
+}
+.headline-second-x {
+    color: #40D478;
+}
+.headline-extra {
+    margin-left: 4px;
+
+    font-size: 10px;
+    color: #919999;
+}
+
+.volume-options, .panning-options {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+}
+.volume-options-spacer, .panning-options-spacer {
+    width: 8px;
+    height: 0;
+}
+#volume-reset-button, #panning-reset-button {
+    font-size: 18px;
+    width: 36px;
+    height: 36px;
+    padding: 9px;
+}
+
+#author-link {
+    cursor: pointer;
+    text-decoration: underline;
+}
