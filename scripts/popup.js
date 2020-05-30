@@ -15,13 +15,13 @@ port.onMessage.addListener(message =>
         // Tab data request response
         case "tab-data-request-response":
         {
-            onActiveTabDataRequestResponseReceived(message);
+            onTabDataRequestResponseReceived(message);
             break;
         }
     }
 });
 
-function onActiveTabDataRequestResponseReceived(message)
+function onTabDataRequestResponseReceived(message)
 {
     // Update volume slider
     if(message.value?.volume)
@@ -35,27 +35,65 @@ function onActiveTabDataRequestResponseReceived(message)
 
 /* IPC - FUNCTIONS */
 
-function postActiveTabDataRequest()
+function postTabDataRequest()
 {
-    fetchActiveTab(activeTab =>
+    fetchActiveTab(tab =>
     {
         port.postMessage
         ({
-            tab: activeTab,
-            issue: "tab-data-request"
+            tab: tab,
+            issue: "tab-data-request",
         });
     });
+}
+
+function postTabVolumeUpdate(volume)
+{
+    fetchActiveTab(tab =>
+    {
+        port.postMessage
+        ({
+            tab: tab,
+            issue: "tab-volume-update",
+            value: volume
+        });
+    });
+}
+
+function postTabPanningUpdate(panning)
+{
+    fetchActiveTab(tab =>
+    {
+        port.postMessage
+        ({
+            tab: tab,
+            issue: "tab-panning-update",
+            value: panning
+        })
+    });
+}
+
+
+/* BROWSER - FUNCTIONS */
+
+function fetchActiveTab(onFetchedListener)
+{
+    chrome.tabs.query
+    (
+        { active: true, currentWindow: true }, 
+        tabs => onFetchedListener(tabs[0])
+    );
 }
 
 
 /* UI - INITIALIZATION */
 
 // Request tab data
-postActiveTabDataRequest();
+postTabDataRequest();
 
 // Volume slider
 const volumeSlider = new mdc.slider.MDCSlider(document.querySelector("#volume-slider"));
-volumeSlider.listen("MDCSlider:input", () => onVolumeChanged());
+volumeSlider.listen("MDCSlider:input", () => onVolumeSliderChanged());
 
 // Volume reset button
 const volumeResetRipple = new mdc.ripple.MDCRipple(document.querySelector("#volume-reset-button"));
@@ -65,7 +103,7 @@ volumeResetButton.addEventListener("click", () => resetVolume())
 
 // Panning slider
 const panningSlider = new mdc.slider.MDCSlider(document.querySelector("#panning-slider"));
-panningSlider.listen("MDCSlider:input", () => onPanningChanged());
+panningSlider.listen("MDCSlider:input", () => onPanningSliderChanged());
 
 // Panning reset button
 const panningResetRipple = new mdc.ripple.MDCRipple(document.querySelector("#panning-reset-button"));
@@ -80,34 +118,16 @@ authorLink.addEventListener("click", () => chrome.tabs.create({ url: "https://sp
 
 /* UI - CALLBACKS */
 
-function onVolumeChanged()
+function onVolumeSliderChanged()
 {
     const volume = volumeSlider.value;
-
-    fetchActiveTab(activeTab =>
-    {
-        port.postMessage
-        ({
-            tab: activeTab,
-            issue: "volume-update",
-            value: volume
-        });
-    });
+    postTabVolumeUpdate(volume)
 }
 
-function onPanningChanged()
+function onPanningSliderChanged()
 {
     const panning = panningSlider.value;
-
-    fetchActiveTab(activeTab =>
-    {
-        port.postMessage
-        ({
-            tab: activeTab,
-            issue: "panning-update",
-            value: panning
-        })
-    });
+    postTabPanningUpdate(panning);
 }
 
 
@@ -116,23 +136,11 @@ function onPanningChanged()
 function resetVolume()
 {
     volumeSlider.value = 100;
-    onVolumeChanged();
+    onVolumeSliderChanged();
 }
 
 function resetPanning()
 {
     panningSlider.value = 0;
-    onPanningChanged();
-}
-
-
-/* UTILITY */
-
-function fetchActiveTab(responseListener)
-{
-    chrome.tabs.query
-    (
-        { active: true, currentWindow: true }, 
-        tabs => responseListener(tabs[0])
-    );
+    onPanningSliderChanged();
 }

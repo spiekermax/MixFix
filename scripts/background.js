@@ -1,9 +1,3 @@
-/* DATA */
-
-// Initialize tab data map
-const tabDataMap = {};
-
-
 /* IPC - CALLBACKS */
 
 // Listen to connection requests
@@ -15,34 +9,27 @@ chrome.extension.onConnect.addListener(port =>
         // Handle message depending on issue
         switch(message.issue)
         {
-            // Volume update
-            case "volume-update":
+            // Tab volume update
+            case "tab-volume-update":
             {
                 // Update tab volume
                 updateTabVolume(message.tab, message.value);
-
                 break;
             }
             
-            // Panning update
-            case "panning-update":
+            // Tab panning update
+            case "tab-panning-update":
             {
                 // Update tab panning
                 updateTabPanning(message.tab, message.value);
-
                 break;
             }
 
             // Tab data request
             case "tab-data-request":
             {
-                port.postMessage
-                ({
-                    tab: message.tab,
-                    issue: "tab-data-request-response",
-                    value: tabDataMap[message.tab.id]
-                });
-
+                // Post tab data
+                postTabDataRequestResponse(port, tabData[message.tab.id]);
                 break;
             }
         }
@@ -50,43 +37,67 @@ chrome.extension.onConnect.addListener(port =>
 });
 
 
-/* METHODS */
+/* IPC - FUNCTIONS */
+
+function postTabDataRequestResponse(port, tabData)
+{
+    port.postMessage
+    ({
+        issue: "tab-data-request-response",
+        value: tabData
+    });
+}
+
+
+/* BROWSER - CALLBACKS */
+
+// Remove data of closed tabs
+chrome.tabs.onRemoved.addListener(tabId => delete tabData[tabId]);
+
+
+/* TABS - DATA */
+
+// Initialize tab data
+const tabData = {};
+
+
+/* TABS - FUNCTIONS */
 
 function updateTabVolume(tab, volume)
 {
     // Initialize tab data
-    if(!tabDataMap[tab.id]) tabDataMap[tab.id] = {};
+    if(!tabData[tab.id]) tabData[tab.id] = {};
 
     // Store tab volume
-    tabDataMap[tab.id].volume = volume;
+    tabData[tab.id].volume = volume;
 
     // Ready tab audio context
     readyTabAudioContext(tab, () =>
     {
         // Update tab volume
-        tabDataMap[tab.id].gainNode.gain.setValueAtTime(volume / 100, tabDataMap[tab.id].audioContext.currentTime);
+        tabData[tab.id].gainNode.gain.setValueAtTime(volume / 100, tabData[tab.id].audioContext.currentTime);
     });
 }
 
 function updateTabPanning(tab, panning)
 {
     // Initialize tab data
-    if(!tabDataMap[tab.id]) tabDataMap[tab.id] = {};
+    if(!tabData[tab.id]) tabData[tab.id] = {};
 
     // Store tab panning
-    tabDataMap[tab.id].panning = panning;
+    tabData[tab.id].panning = panning;
 
     // Ready tab audio context
     readyTabAudioContext(tab, () =>
     {
         // Update tab panning
-        tabDataMap[tab.id].panNode.pan.setValueAtTime(panning / 100, tabDataMap[tab.id].audioContext.currentTime);
+        tabData[tab.id].panNode.pan.setValueAtTime(panning / 100, tabData[tab.id].audioContext.currentTime);
     });
 }
 
 function readyTabAudioContext(tab, onReadyListener)
 {
-    if(tabDataMap[tab.id].isAudioContextReady)
+    if(tabData[tab.id].isAudioContextReady)
     {
         // Notify listener
         onReadyListener();
@@ -100,22 +111,22 @@ function readyTabAudioContext(tab, onReadyListener)
     }, stream =>
     {
         // Initialize audio context
-        tabDataMap[tab.id].audioContext = new AudioContext();
-        tabDataMap[tab.id].audioSource = tabDataMap[tab.id].audioContext.createMediaStreamSource(stream);
+        tabData[tab.id].audioContext = new AudioContext();
+        tabData[tab.id].audioSource = tabData[tab.id].audioContext.createMediaStreamSource(stream);
             
         // Initialize gain node
-        tabDataMap[tab.id].gainNode = tabDataMap[tab.id].audioContext.createGain();
+        tabData[tab.id].gainNode = tabData[tab.id].audioContext.createGain();
             
         // Initialize pan node
-        tabDataMap[tab.id].panNode = tabDataMap[tab.id].audioContext.createStereoPanner();
+        tabData[tab.id].panNode = tabData[tab.id].audioContext.createStereoPanner();
             
         // Integrate nodes
-        tabDataMap[tab.id].audioSource.connect(tabDataMap[tab.id].gainNode).connect(tabDataMap[tab.id].panNode).connect(tabDataMap[tab.id].audioContext.destination);
+        tabData[tab.id].audioSource.connect(tabData[tab.id].gainNode).connect(tabData[tab.id].panNode).connect(tabData[tab.id].audioContext.destination);
 
         // Notify listener
         onReadyListener();
     });
 
     // Indicate the audio context is (being) initialized
-    tabDataMap[tab.id].isAudioContextReady = true;
+    tabData[tab.id].isAudioContextReady = true;
 }
