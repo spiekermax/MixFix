@@ -24,11 +24,11 @@ port.onMessage.addListener(message =>
 function onTabDataRequestResponseReceived(message)
 {
     // Update volume slider
-    if(message.value?.volume)
+    if(message.value?.volume !== undefined)
         volumeSlider.value = message.value.volume;
 
     // Update panning slider
-    if(message.value?.panning)
+    if(message.value?.panning !== undefined)
         panningSlider.value = message.value.panning;
 }
 

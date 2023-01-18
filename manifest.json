@@ -1,15 +1,16 @@
 {
     "name": "MixFix",
-    "version": "1.1",
+    "version": "1.2",
     "description": "Easily adjust volume and pan any incoming audio to maximize your listening experience.",
     "manifest_version": 2,
 
     "icons":
     {
-        "16": "images/icon16.png",
-        "32": "images/icon32.png",
-        "48": "images/icon48.png",
-        "128": "images/icon128.png"
+        "16": "images/icon16-light.png",
+        "32": "images/icon32-light.png",
+        "48": "images/icon48-light.png",
+        "64": "images/icon64-light.png",
+        "128": "images/icon128-light.png"
     },
 
     "permissions": ["activeTab", "tabCapture"],
@@ -20,10 +21,11 @@
         "default_popup": "popup.html",
         "default_icon":
         {
-            "16": "images/icon16.png",
-            "32": "images/icon32.png",
-            "48": "images/icon48.png",
-            "128": "images/icon128.png"
+            "16": "images/icon16-light.png",
+            "32": "images/icon32-light.png",
+            "48": "images/icon48-light.png",
+            "64": "images/icon64-light.png",
+            "128": "images/icon128-light.png"
         }
     },
     "background":

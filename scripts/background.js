@@ -49,10 +49,34 @@ function postTabDataRequestResponse(port, tabData)
 }
 
 
+/* BROWSER INITIALIZATION */
+
+const theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+changeIcon(theme);
+
+
 /* BROWSER - CALLBACKS */
 
 // Remove data of closed tabs
 chrome.tabs.onRemoved.addListener(tabId => delete tabData[tabId]);
+
+
+/* BROWSER - FUNCTIONS */
+
+function changeIcon(theme)
+{
+    chrome.browserAction.setIcon
+    ({
+        path:
+        {
+            "16": `images/icon16-${theme}.png`,
+            "32": `images/icon32-${theme}.png`,
+            "48": `images/icon48-${theme}.png`,
+            "64": `images/icon64-${theme}.png`,
+            "128": `images/icon128-${theme}.png`
+        }
+    });
+}
 
 
 /* TABS - DATA */
