@@ -94,6 +94,7 @@ postTabDataRequest();
 // Volume slider
 const volumeSlider = new mdc.slider.MDCSlider(document.querySelector("#volume-slider"));
 volumeSlider.listen("MDCSlider:input", () => onVolumeSliderChanged());
+const volumeSliderText = document.querySelector("#volume-slider .mdc-slider__pin-value-marker-custom");
 
 // Volume reset button
 const volumeResetRipple = new mdc.ripple.MDCRipple(document.querySelector("#volume-reset-button"));
@@ -104,6 +105,7 @@ volumeResetButton.addEventListener("click", () => resetVolume())
 // Panning slider
 const panningSlider = new mdc.slider.MDCSlider(document.querySelector("#panning-slider"));
 panningSlider.listen("MDCSlider:input", () => onPanningSliderChanged());
+const panningSliderText = document.querySelector("#panning-slider .mdc-slider__pin-value-marker-custom");
 
 // Panning reset button
 const panningResetRipple = new mdc.ripple.MDCRipple(document.querySelector("#panning-reset-button"));
@@ -120,13 +122,20 @@ authorLink.addEventListener("click", () => chrome.tabs.create({ url: "https://sp
 
 function onVolumeSliderChanged()
 {
-    const volume = volumeSlider.value;
-    postTabVolumeUpdate(volume)
+    const sliderValue = volumeSlider.value;
+    const volume = sliderValue <= 100 ? sliderValue : 100 + (sliderValue - 100) * 2;
+
+    volumeSliderText.innerHTML = volume.toFixed(0);
+
+    postTabVolumeUpdate(volume);
 }
 
 function onPanningSliderChanged()
 {
     const panning = panningSlider.value;
+
+    panningSliderText.innerHTML = panning.toFixed(0);
+
     postTabPanningUpdate(panning);
 }
 

@@ -45,6 +45,33 @@ body {
     margin-left: -5px;
 }
 
+.mdc-slider__pin-value-marker-custom {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+
+    font-family: Roboto, sans-serif;
+    font-family: var(--mdc-typography-body2-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));
+    font-size: .875rem;
+    font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+    font-weight: 400;
+    font-weight: var(--mdc-typography-body2-font-weight, 400);
+
+    line-height: 1.25rem;
+    line-height: var(--mdc-typography-body2-line-height, 1.25rem);
+    letter-spacing: .0178571429em;
+    letter-spacing: var(--mdc-typography-body2-letter-spacing, 0.0178571429em);
+
+    text-decoration: inherit;
+    -webkit-text-decoration: var(--mdc-typography-body2-text-decoration, inherit);
+    text-decoration: var(--mdc-typography-body2-text-decoration, inherit);
+
+    text-transform: inherit;
+    text-transform: var(--mdc-typography-body2-text-transform, inherit);
+
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
 
 /* ELEMENTS */
 
