@@ -60,6 +60,14 @@ changeIcon(theme);
 // Remove data of closed tabs
 chrome.tabs.onRemoved.addListener(tabId => delete tabData[tabId]);
 
+chrome.tabs.onUpdated.addListener((_, changeInfo, tab) =>
+{
+    const muted = changeInfo?.mutedInfo?.muted;
+    if (muted === undefined) return;
+
+    updateTabMuted(tab, changeInfo.mutedInfo.muted);
+});
+
 
 /* BROWSER - FUNCTIONS */
 
@@ -87,7 +95,29 @@ const tabData = {};
 
 /* TABS - FUNCTIONS */
 
-function updateTabVolume(tab, volume)
+async function updateTabMuted(tab, muted)
+{
+    // Initialize tab data
+    if(!tabData[tab.id]) tabData[tab.id] = {};
+
+    // Store if tab is muted
+    tabData[tab.id].muted = muted;
+
+    // Derrive effective volume
+    const volume = muted ? 0 : tabData[tab.id].volume ?? 100;
+
+    try
+    {
+        // Await tab audio context
+        await readyTabAudioContext(tab);
+
+        // Update tab volume
+        tabData[tab.id].gainNode.gain.setValueAtTime(volume / 100, tabData[tab.id].audioContext.currentTime);
+    }
+    catch(error) {}
+}
+
+async function updateTabVolume(tab, volume)
 {
     // Initialize tab data
     if(!tabData[tab.id]) tabData[tab.id] = {};
@@ -95,15 +125,21 @@ function updateTabVolume(tab, volume)
     // Store tab volume
     tabData[tab.id].volume = volume;
 
-    // Ready tab audio context
-    readyTabAudioContext(tab, () =>
+    // Derrive effective volume
+    volume = tabData[tab.id].muted ? 0 : volume;
+
+    try
     {
+        // Ready tab audio context
+        await readyTabAudioContext(tab);
+
         // Update tab volume
         tabData[tab.id].gainNode.gain.setValueAtTime(volume / 100, tabData[tab.id].audioContext.currentTime);
-    });
+    }
+    catch(error) {}
 }
 
-function updateTabPanning(tab, panning)
+async function updateTabPanning(tab, panning)
 {
     // Initialize tab data
     if(!tabData[tab.id]) tabData[tab.id] = {};
@@ -111,46 +147,67 @@ function updateTabPanning(tab, panning)
     // Store tab panning
     tabData[tab.id].panning = panning;
 
-    // Ready tab audio context
-    readyTabAudioContext(tab, () =>
+    try
     {
+        // Ready tab audio context
+        await readyTabAudioContext(tab);
+
         // Update tab panning
         tabData[tab.id].panNode.pan.setValueAtTime(panning / 100, tabData[tab.id].audioContext.currentTime);
-    });
+    }
+    catch(error) {}
 }
 
-function readyTabAudioContext(tab, onReadyListener)
+function readyTabAudioContext(tab)
 {
-    if(tabData[tab.id].isAudioContextReady)
-    {
-        // Notify listener
-        onReadyListener();
-        return;
-    }
+    // Immediately resolve if audio context already bound
+    if(tabData[tab.id].audioContext !== undefined)
+        return Promise.resolve();
 
-    chrome.tabCapture.capture
-    ({ 
-        audio: true,
-        video: false,
-    }, stream =>
-    {
-        // Initialize audio context
-        tabData[tab.id].audioContext = new AudioContext();
-        tabData[tab.id].audioSource = tabData[tab.id].audioContext.createMediaStreamSource(stream);
-            
-        // Initialize gain node
-        tabData[tab.id].gainNode = tabData[tab.id].audioContext.createGain();
-            
-        // Initialize pan node
-        tabData[tab.id].panNode = tabData[tab.id].audioContext.createStereoPanner();
-            
-        // Integrate nodes
-        tabData[tab.id].audioSource.connect(tabData[tab.id].gainNode).connect(tabData[tab.id].panNode).connect(tabData[tab.id].audioContext.destination);
+    // Wait for audio context when one is already being instantiated
+    if(tabData[tab.id].awaitAudioContext !== undefined)
+        return tabData[tab.id].awaitAudioContext;
 
-        // Notify listener
-        onReadyListener();
+    // Create promise for audio context
+    tabData[tab.id].awaitAudioContext = new Promise((resolve, reject) =>
+    {
+        // Immediately resolve if audio context already bound
+        if(tabData[tab.id].audioContext !== undefined) resolve();
+
+        // Bind audio context to tab
+        chrome.tabCapture.capture
+        ({ 
+            audio: true,
+            video: false,
+        }, stream =>
+        {
+            // Prevent invalid initializations
+            if(!(stream instanceof MediaStream))
+            {
+                // Remove the promise since instantiation failed and should be retried
+                tabData[tab.id].awaitAudioContext = undefined;
+
+                // Indicate something went wrong
+                reject(); return;
+            }
+    
+            // Initialize audio context
+            tabData[tab.id].audioContext = new AudioContext();
+            tabData[tab.id].audioSource = tabData[tab.id].audioContext.createMediaStreamSource(stream);
+                
+            // Initialize gain node
+            tabData[tab.id].gainNode = tabData[tab.id].audioContext.createGain();
+                
+            // Initialize pan node
+            tabData[tab.id].panNode = tabData[tab.id].audioContext.createStereoPanner();
+                
+            // Integrate nodes
+            tabData[tab.id].audioSource.connect(tabData[tab.id].gainNode).connect(tabData[tab.id].panNode).connect(tabData[tab.id].audioContext.destination);
+    
+            // Resolve promise
+            resolve();
+        });
     });
 
-    // Indicate the audio context is (being) initialized
-    tabData[tab.id].isAudioContextReady = true;
+    return tabData[tab.id].awaitAudioContext;
 }
