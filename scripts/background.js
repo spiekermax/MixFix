@@ -63,7 +63,7 @@ chrome.tabs.onRemoved.addListener(tabId => delete tabData[tabId]);
 chrome.tabs.onUpdated.addListener((_, changeInfo, tab) =>
 {
     const muted = changeInfo?.mutedInfo?.muted;
-    if (muted === undefined) return;
+    if(muted === undefined) return;
 
     updateTabMuted(tab, changeInfo.mutedInfo.muted);
 });
