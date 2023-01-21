@@ -13,7 +13,13 @@
         "128": "images/icon128-light.png"
     },
 
-    "permissions": ["activeTab", "tabCapture"],
+    "permissions":
+    [
+        "activeTab", 
+        "tabCapture",
+        "https://*/",
+        "http://*/"
+    ],
 
     "browser_action":
     {
@@ -32,5 +38,12 @@
     {
         "scripts": ["scripts/background.js"],
         "persistent": true
-    }
+    },
+    "content_scripts":
+    [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["scripts/content.js"]
+        }
+    ]
 }

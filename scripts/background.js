@@ -36,6 +36,24 @@ chrome.extension.onConnect.addListener(port =>
     });
 });
 
+// Listen to connectionless messages
+chrome.runtime.onMessage.addListener(request =>
+{
+    switch(request.issue)
+    {
+        // Window state update
+        case "window-state-update":
+        {
+            // Update window state
+            chrome.windows.getCurrent(window =>
+            {
+                chrome.windows.update(window.id, { state: request.value });
+            });
+            break;
+        }
+    }
+});
+
 
 /* IPC - FUNCTIONS */
 
