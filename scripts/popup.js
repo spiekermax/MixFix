@@ -25,11 +25,11 @@ function onTabDataRequestResponseReceived(message)
 {
     // Update volume slider
     if(message.value?.volume !== undefined)
-        volumeSlider.value = message.value.volume;
+        volumeSlider.value = sliderValueFromVolume(message.value.volume);
 
     // Update panning slider
     if(message.value?.panning !== undefined)
-        panningSlider.value = message.value.panning;
+        panningSlider.value = sliderValueFromPanning(message.value.panning);
 }
 
 
@@ -123,7 +123,7 @@ authorLink.addEventListener("click", () => chrome.tabs.create({ url: "https://sp
 function onVolumeSliderChanged()
 {
     const sliderValue = volumeSlider.value;
-    const volume = sliderValue <= 100 ? sliderValue : 100 + (sliderValue - 100) * 2;
+    const volume = volumeFromSliderValue(sliderValue);
 
     volumeSliderText.innerHTML = volume.toFixed(0);
 
@@ -132,7 +132,8 @@ function onVolumeSliderChanged()
 
 function onPanningSliderChanged()
 {
-    const panning = panningSlider.value;
+    const sliderValue = panningSlider.value;
+    const panning = panningFromSliderValue(sliderValue);
 
     panningSliderText.innerHTML = panning.toFixed(0);
 
@@ -152,4 +153,27 @@ function resetPanning()
 {
     panningSlider.value = 0;
     onPanningSliderChanged();
+}
+
+
+/* UTILITY */
+
+function sliderValueFromVolume(volume)
+{
+    return volume <= 100 ? volume : 100 + (volume - 100) / 2;
+}
+
+function volumeFromSliderValue(sliderValue)
+{
+    return sliderValue <= 100 ? sliderValue : 100 + (sliderValue - 100) * 2;
+}
+
+function sliderValueFromPanning(panning)
+{
+    return panning;
+}
+
+function panningFromSliderValue(sliderValue)
+{
+    return sliderValue;
 }
