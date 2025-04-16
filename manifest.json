@@ -1,49 +1,59 @@
 {
     "name": "MixFix",
-    "version": "1.2",
+    "version": "1.3",
     "description": "Easily adjust volume and pan any incoming audio to maximize your listening experience.",
-    "manifest_version": 2,
+    "manifest_version": 3,
 
     "icons":
     {
-        "16": "images/icon16-light.png",
-        "32": "images/icon32-light.png",
-        "48": "images/icon48-light.png",
-        "64": "images/icon64-light.png",
-        "128": "images/icon128-light.png"
+        "16": "images/icon16-dark.png",
+        "32": "images/icon32-dark.png",
+        "48": "images/icon48-dark.png",
+        "64": "images/icon64-dark.png",
+        "128": "images/icon128-dark.png"
     },
 
     "permissions":
     [
-        "activeTab", 
-        "tabCapture",
-        "https://*/",
-        "http://*/"
+        "activeTab",
+        "offscreen",
+        "tabCapture"
+    ],
+    "host_permissions":
+    [
+        "<all_urls>"
     ],
 
-    "browser_action":
+    "action":
     {
         "default_title": "MixFix",
         "default_popup": "popup.html",
         "default_icon":
         {
-            "16": "images/icon16-light.png",
-            "32": "images/icon32-light.png",
-            "48": "images/icon48-light.png",
-            "64": "images/icon64-light.png",
-            "128": "images/icon128-light.png"
+            "16": "images/icon16-dark.png",
+            "32": "images/icon32-dark.png",
+            "48": "images/icon48-dark.png",
+            "64": "images/icon64-dark.png",
+            "128": "images/icon128-dark.png"
         }
     },
+
     "background":
     {
-        "scripts": ["scripts/background.js"],
-        "persistent": true
+        "service_worker": "scripts/background.js"
     },
     "content_scripts":
     [
         {
             "matches": ["<all_urls>"],
             "js": ["scripts/content.js"]
+        }
+    ],
+    "web_accessible_resources":
+    [
+        {
+            "matches": ["<all_urls>"],
+            "resources": ["offscreen.html"]
         }
     ]
 }
