@@ -1,0 +1,1 @@
+**Archived**: I am discontinuing development of this extension due to the excessive amount of time wasted arguing with the highly incompetent Chrome Web Store review team. I am not willing to spend my time dealing with individuals so unqualified that they struggle to formulate coherent sentences.
